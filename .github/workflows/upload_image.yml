@@ -1,0 +1,21 @@
+name: Publish Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+      - develop
+
+jobs:
+  call-template:
+    uses: ecommerce-bakend/ci-templates/.github/workflows/upload_image.yml@main
+    with:
+      image_name: user-service
+      image_tag: ${{ github.ref_name }}
+      dockerfile_path: ./Dockerfile
+      context: .
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      
