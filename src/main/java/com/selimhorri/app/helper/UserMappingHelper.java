@@ -8,6 +8,22 @@ import com.selimhorri.app.dto.UserDto;
 public interface UserMappingHelper {
 
 	public static UserDto map(final User user) {
+		if (user == null)
+			return null;
+		Credential cred = user.getCredential();
+		CredentialDto credDto = null;
+		if (cred != null) {
+			credDto = CredentialDto.builder()
+					.credentialId(cred.getCredentialId())
+					.username(cred.getUsername())
+					.password(cred.getPassword())
+					.roleBasedAuthority(cred.getRoleBasedAuthority())
+					.isEnabled(cred.getIsEnabled())
+					.isAccountNonExpired(cred.getIsAccountNonExpired())
+					.isAccountNonLocked(cred.getIsAccountNonLocked())
+					.isCredentialsNonExpired(cred.getIsCredentialsNonExpired())
+					.build();
+		}
 		return UserDto.builder()
 				.userId(user.getUserId())
 				.firstName(user.getFirstName())
@@ -15,17 +31,7 @@ public interface UserMappingHelper {
 				.imageUrl(user.getImageUrl())
 				.email(user.getEmail())
 				.phone(user.getPhone())
-				.credentialDto(
-						CredentialDto.builder()
-								.credentialId(user.getCredential().getCredentialId())
-								.username(user.getCredential().getUsername())
-								.password(user.getCredential().getPassword())
-								.roleBasedAuthority(user.getCredential().getRoleBasedAuthority())
-								.isEnabled(user.getCredential().getIsEnabled())
-								.isAccountNonExpired(user.getCredential().getIsAccountNonExpired())
-								.isAccountNonLocked(user.getCredential().getIsAccountNonLocked())
-								.isCredentialsNonExpired(user.getCredential().getIsCredentialsNonExpired())
-								.build())
+				.credentialDto(credDto)
 				.build();
 	}
 

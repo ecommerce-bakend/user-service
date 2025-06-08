@@ -10,6 +10,11 @@ Crear un usuario
 
 POST `/user-service/api/users` 
 
+Errores:
+
+- Recibe al userId como parámetro, lo cual rompe cuando el id ya es de otro usuarios
+
+- Cuando se crea un usuario con el objeto Credentials, como la relación es de tipo fetch lazy, cuando se hace el fetch esa relación no esta en el contexto de hibernate
 ```
 {
     "userId": "{{$randomInt}}",
