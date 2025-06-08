@@ -49,5 +49,27 @@ PUT `/user-service/api/users` Check
 
 
 ```
-
+{
+    "userId": "7",
+    "firstName": "Alejndsdsadsro",
+    "lastName": "Cordoba",
+    "imageUrl": "{{$randomUrl}}",
+    "email": "{{$randomEmail}}",
+    "addressDtos": [
+        {
+            "fullAddress": "123 Main St",
+            "postalCode": "12345",
+            "city": "New York"
+        }
+    ],
+    "credential": {
+        "username": "johndoe",
+        "password": "securePassword123",
+        "roleBasedAuthority": "ROLE_USER",
+        "isEnabled": true,
+        "isAccountNonExpired": true,
+        "isAccountNonLocked": true,
+        "isCredentialsNonExpired": true
+    }
+}
 ```

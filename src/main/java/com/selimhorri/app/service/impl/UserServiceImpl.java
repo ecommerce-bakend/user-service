@@ -3,10 +3,13 @@ package com.selimhorri.app.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.selimhorri.app.domain.Credential;
+import com.selimhorri.app.domain.User;
 import com.selimhorri.app.dto.UserDto;
 import com.selimhorri.app.exception.wrapper.UserObjectNotFoundException;
 import com.selimhorri.app.helper.UserMappingHelper;
@@ -47,13 +50,38 @@ public class UserServiceImpl implements UserService {
 	public UserDto save(final UserDto userDto) {
 		log.info("*** UserDto, service; save user *");
 		userDto.setUserId(null); // o 0, dependiendo de tu tipo y lógica
+
 		return UserMappingHelper.map(this.userRepository.save(UserMappingHelper.map(userDto)));
 	}
 
 	@Override
 	public UserDto update(final UserDto userDto) {
-		log.info("*** UserDto, service; update user *");
-		return UserMappingHelper.map(this.userRepository.save(UserMappingHelper.map(userDto)));
+		log.info("*** UserDto, service; update user ***");
+
+		// Buscar la entidad existente
+		User existingUser = this.userRepository.findById(userDto.getUserId())
+				.orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+		// Actualizar los campos
+		existingUser.setFirstName(userDto.getFirstName());
+		existingUser.setLastName(userDto.getLastName());
+		existingUser.setImageUrl(userDto.getImageUrl());
+		existingUser.setEmail(userDto.getEmail());
+		existingUser.setPhone(userDto.getPhone());
+
+		// Actualizar credential si existe
+		if (userDto.getCredentialDto() != null && existingUser.getCredential() != null) {
+			Credential existingCredential = existingUser.getCredential();
+			existingCredential.setUsername(userDto.getCredentialDto().getUsername());
+			existingCredential.setPassword(userDto.getCredentialDto().getPassword());
+			existingCredential.setRoleBasedAuthority(userDto.getCredentialDto().getRoleBasedAuthority());
+			existingCredential.setIsEnabled(userDto.getCredentialDto().getIsEnabled());
+			existingCredential.setIsAccountNonExpired(userDto.getCredentialDto().getIsAccountNonExpired());
+			existingCredential.setIsAccountNonLocked(userDto.getCredentialDto().getIsAccountNonLocked());
+			existingCredential.setIsCredentialsNonExpired(userDto.getCredentialDto().getIsCredentialsNonExpired());
+		}
+
+		return UserMappingHelper.map(this.userRepository.save(existingUser));
 	}
 
 	@Override
