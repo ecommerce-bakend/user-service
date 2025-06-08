@@ -86,9 +86,32 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto update(final Integer userId, final UserDto userDto) {
-		log.info("*** UserDto, service; update user with userId *");
-		return UserMappingHelper.map(this.userRepository.save(
-				UserMappingHelper.map(this.findById(userId))));
+		log.info("*** UserDto, service; update user with userId ***");
+
+		// Buscar la entidad existente por el userId del parámetro
+		User existingUser = this.userRepository.findById(userId)
+				.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+		// Actualizar los campos con los datos del userDto
+		existingUser.setFirstName(userDto.getFirstName());
+		existingUser.setLastName(userDto.getLastName());
+		existingUser.setImageUrl(userDto.getImageUrl());
+		existingUser.setEmail(userDto.getEmail());
+		existingUser.setPhone(userDto.getPhone());
+
+		// Actualizar credential si existe en el DTO y en la entidad
+		if (userDto.getCredentialDto() != null && existingUser.getCredential() != null) {
+			Credential existingCredential = existingUser.getCredential();
+			existingCredential.setUsername(userDto.getCredentialDto().getUsername());
+			existingCredential.setPassword(userDto.getCredentialDto().getPassword());
+			existingCredential.setRoleBasedAuthority(userDto.getCredentialDto().getRoleBasedAuthority());
+			existingCredential.setIsEnabled(userDto.getCredentialDto().getIsEnabled());
+			existingCredential.setIsAccountNonExpired(userDto.getCredentialDto().getIsAccountNonExpired());
+			existingCredential.setIsAccountNonLocked(userDto.getCredentialDto().getIsAccountNonLocked());
+			existingCredential.setIsCredentialsNonExpired(userDto.getCredentialDto().getIsCredentialsNonExpired());
+		}
+
+		return UserMappingHelper.map(this.userRepository.save(existingUser));
 	}
 
 	@Override

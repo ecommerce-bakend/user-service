@@ -47,6 +47,9 @@ Actualizar un usuario
 
 PUT `/user-service/api/users` Check
 
+Errores:
+
+Estaba relacionando el dto a una entidad desligada a la entidad que existe en la base de datos
 
 ```
 {
